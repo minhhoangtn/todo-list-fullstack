@@ -1,0 +1,13 @@
+# Build output
+tmp/
+
+# Environment variables
+.env
+.env.*
+
+# Go workspace
+go.work
+go.work.sum
+
+# macOS
+.DS_Store
