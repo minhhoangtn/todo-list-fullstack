@@ -1,5 +1,24 @@
 basePath: /
 definitions:
+  http.CreateTodoRequest:
+    properties:
+      body:
+        type: string
+      completed:
+        type: boolean
+    required:
+    - body
+    type: object
+  http.UpdateTodoRequest:
+    properties:
+      body:
+        type: string
+      completed:
+        type: boolean
+    required:
+    - body
+    - completed
+    type: object
   models.Todo:
     properties:
       body:
@@ -7,7 +26,7 @@ definitions:
       completed:
         type: boolean
       id:
-        type: integer
+        type: string
     type: object
 host: localhost:8080
 info:
@@ -34,12 +53,12 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Todo body
+      - description: Todo to create
         in: body
         name: todo
         required: true
         schema:
-          $ref: '#/definitions/models.Todo'
+          $ref: '#/definitions/http.CreateTodoRequest'
       produces:
       - application/json
       responses:
@@ -54,6 +73,69 @@ paths:
               type: string
             type: object
       summary: Create a todo
+      tags:
+      - todos
+  /todos/{id}:
+    delete:
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a todo
+      tags:
+      - todos
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated todo fields
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Todo'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a todo
       tags:
       - todos
 swagger: "2.0"

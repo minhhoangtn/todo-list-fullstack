@@ -23,8 +23,11 @@ func NewServer(svc *services.TodoService) *Server {
 }
 
 func (s *Server) registerRoutes() {
-	s.router.GET("/todos", s.handler.GetTodos)
-	s.router.POST("/todos", s.handler.CreateTodo)
+	todos := s.router.Group("/todos")
+	todos.GET("", s.handler.GetTodos)
+	todos.POST("", s.handler.CreateTodo)
+	todos.PATCH("/:id", s.handler.UpdateTodo)
+	todos.DELETE("/:id", s.handler.DeleteTodo)
 
 	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }

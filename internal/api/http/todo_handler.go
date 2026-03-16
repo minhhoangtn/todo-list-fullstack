@@ -31,15 +31,61 @@ func (h *TodoHandler) GetTodos(c *gin.Context) {
 // @Tags         todos
 // @Accept       json
 // @Produce      json
-// @Param        todo  body      models.Todo  true  "Todo body"
+// @Param        todo  body      CreateTodoRequest  true  "Todo to create"
 // @Success      201   {object}  models.Todo
 // @Failure      400   {object}  map[string]string
 // @Router       /todos [post]
 func (h *TodoHandler) CreateTodo(c *gin.Context) {
-	var todo models.Todo
-	if err := c.ShouldBindJSON(&todo); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var req CreateTodoRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, validationErrors(err))
 		return
 	}
+	todo := models.Todo{Body: req.Body, Completed: req.Completed}
 	c.JSON(http.StatusCreated, h.service.Create(todo))
+}
+
+// UpdateTodo godoc
+// @Summary      Update a todo
+// @Tags         todos
+// @Accept       json
+// @Produce      json
+// @Param        id    path      string             true  "Todo ID"
+// @Param        todo  body      UpdateTodoRequest  true  "Updated todo fields"
+// @Success      200   {object}  models.Todo
+// @Failure      400   {object}  map[string]string
+// @Failure      404   {object}  map[string]string
+// @Router       /todos/{id} [patch]
+func (h *TodoHandler) UpdateTodo(c *gin.Context) {
+	id := c.Param("id")
+
+	var req UpdateTodoRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, validationErrors(err))
+		return
+	}
+	updated, err := h.service.Update(id, models.Todo{Body: req.Body, Completed: req.Completed})
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, updated)
+}
+
+// DeleteTodo godoc
+// @Summary      Delete a todo
+// @Tags         todos
+// @Param        id   path  string  true  "Todo ID"
+// @Success      204
+// @Failure      400  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /todos/{id} [delete]
+func (h *TodoHandler) DeleteTodo(c *gin.Context) {
+	id := c.Param("id")
+
+	if err := h.service.Delete(id); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.Status(http.StatusNoContent)
 }
