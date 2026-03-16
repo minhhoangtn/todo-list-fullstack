@@ -4,6 +4,8 @@ import (
 	"minhhoangtn/todo-list-fullstack/internal/services"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Server struct {
@@ -23,6 +25,8 @@ func NewServer(svc *services.TodoService) *Server {
 func (s *Server) registerRoutes() {
 	s.router.GET("/todos", s.handler.GetTodos)
 	s.router.POST("/todos", s.handler.CreateTodo)
+
+	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
 
 func (s *Server) Start(addr string) error {

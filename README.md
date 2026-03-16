@@ -13,6 +13,10 @@ backend/
 ├── cmd/
 │   └── app/
 │       └── main.go           # Application entry point & dependency wiring
+├── docs/                     # Auto-generated Swagger docs (swag init)
+│   ├── docs.go
+│   ├── swagger.json
+│   └── swagger.yaml
 ├── internal/
 │   ├── api/                  # API abstraction layer
 │   │   ├── server.go         # Server interface (swap HTTP/GraphQL here)
@@ -51,38 +55,17 @@ Install dependencies:
 go mod download
 ```
 
-## Running
-
-### Development (with hot reload)
-
-```bash
-go tool air
-```
-
-The server will restart automatically on code changes.
-
-### Production
-
-```bash
-go run ./cmd/app
-```
+## Makefile commands
 
 The server runs on `http://localhost:8080`.
+Interactive API documentation is available at:
 
-## API
-
-| Method | Endpoint | Description       |
-| ------ | -------- | ----------------- |
-| GET    | `/todos` | Get all todos     |
-| POST   | `/todos` | Create a new todo |
-
-### POST /todos
-
-Request body:
-
-```json
-{
-  "body": "Buy groceries",
-  "completed": false
-}
+```text
+http://localhost:8080/swagger/index.html
 ```
+
+| Command     | Description                                                         |
+| ----------- | ------------------------------------------------------------------- |
+| `make run`  | Run the app, The server will restart automatically on code changes. |
+| `make dev`  | Run with hot reload (air)                                           |
+| `make swag` | Regenerate Swagger docs                                             |
