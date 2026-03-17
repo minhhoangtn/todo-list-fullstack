@@ -38,7 +38,7 @@ func (h *TodoHandler) GetTodos(c *gin.Context) {
 func (h *TodoHandler) CreateTodo(c *gin.Context) {
 	var req CreateTodoRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, validationErrors(err))
+		c.JSON(http.StatusBadRequest, handleValidationErrors(err))
 		return
 	}
 	todo := models.Todo{Body: req.Body, Completed: req.Completed}
@@ -61,12 +61,12 @@ func (h *TodoHandler) UpdateTodo(c *gin.Context) {
 
 	var req UpdateTodoRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, validationErrors(err))
+		c.JSON(http.StatusBadRequest, handleValidationErrors(err))
 		return
 	}
 	updated, err := h.service.Update(id, models.Todo{Body: req.Body, Completed: req.Completed})
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		handleAppError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, updated)
@@ -84,7 +84,7 @@ func (h *TodoHandler) DeleteTodo(c *gin.Context) {
 	id := c.Param("id")
 
 	if err := h.service.Delete(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		handleAppError(c, err)
 		return
 	}
 	c.Status(http.StatusNoContent)

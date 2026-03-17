@@ -8,6 +8,7 @@
 package main
 
 import (
+	"log"
 	"minhhoangtn/todo-list-fullstack/internal/api"
 	httpApi "minhhoangtn/todo-list-fullstack/internal/api/http"
 	"minhhoangtn/todo-list-fullstack/internal/repositories"
@@ -17,9 +18,9 @@ import (
 )
 
 func main() {
-	repo := repositories.NewTodoRepository()
+	repo := repositories.NewTodoLocalRepository()
 	svc := services.NewTodoService(repo)
 
 	var server api.Server = httpApi.NewServer(svc)
-	server.Start(":8080")
+	log.Fatal(server.Start(":8080"))
 }

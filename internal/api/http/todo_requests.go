@@ -7,5 +7,5 @@ type CreateTodoRequest struct {
 
 type UpdateTodoRequest struct {
 	Body      string `json:"body"      binding:"required"`
-	Completed bool   `json:"completed"      binding:"required"`
+	Completed bool   `json:"completed"`
 }

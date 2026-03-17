@@ -1,15 +1,17 @@
 package services
 
 import (
+	"errors"
+	"minhhoangtn/todo-list-fullstack/internal/errs"
 	"minhhoangtn/todo-list-fullstack/internal/models"
 	"minhhoangtn/todo-list-fullstack/internal/repositories"
 )
 
 type TodoService struct {
-	repo *repositories.TodoRepository
+	repo repositories.TodoRepository
 }
 
-func NewTodoService(repo *repositories.TodoRepository) *TodoService {
+func NewTodoService(repo repositories.TodoRepository) *TodoService {
 	return &TodoService{repo: repo}
 }
 
@@ -22,9 +24,26 @@ func (s *TodoService) Create(todo models.Todo) models.Todo {
 }
 
 func (s *TodoService) Update(id string, todo models.Todo) (models.Todo, error) {
-	return s.repo.Update(id, todo)
+	result, err := s.repo.Update(id, todo)
+	if errors.Is(err, models.ErrTodoNotFound) {
+		return models.Todo{}, errs.NotFound(err)
+	}
+
+	if err != nil {
+		return models.Todo{}, errs.Internal(err)
+	}
+	return result, nil
 }
 
 func (s *TodoService) Delete(id string) error {
-	return s.repo.Delete(id)
+	err := s.repo.Delete(id)
+	if errors.Is(err, models.ErrTodoNotFound) {
+		return errs.NotFound(err)
+	}
+
+	if err != nil {
+		return errs.Internal(err)
+	}
+
+	return nil
 }

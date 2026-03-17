@@ -1,6 +1,7 @@
 package http
 
 import (
+	"minhhoangtn/todo-list-fullstack/internal/api"
 	"minhhoangtn/todo-list-fullstack/internal/services"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +14,7 @@ type Server struct {
 	handler *TodoHandler
 }
 
-func NewServer(svc *services.TodoService) *Server {
+func NewServer(svc *services.TodoService) api.Server {
 	s := &Server{
 		router:  gin.Default(),
 		handler: NewTodoHandler(svc),
